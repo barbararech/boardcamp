@@ -1,12 +1,13 @@
 import express, { json } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
-dotenv.config();
+import categoriesRouter from "./routes/categoriesRouter.js";
 
 const app = express();
 app.use(cors());
 app.use(json());
+
+app.use(categoriesRouter);
 
 const PORT = process.env.PORT || 4000;
 
