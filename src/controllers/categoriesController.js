@@ -7,7 +7,7 @@ export async function getCategories(req, res) {
     );
     res.send(categories);
   } catch {
-    res.sendSattus(500);
+    res.sendStatus(500);
   }
 }
 
