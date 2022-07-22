@@ -3,7 +3,7 @@ import connection from "../dbStartegy/postgres.js";
 export async function getCategories(req, res) {
   try {
     const { rows: categories } = await connection.query(
-      "SELECT * FROM categories"
+      "SELECT * FROM categories;"
     );
     res.send(categories);
   } catch {
@@ -16,7 +16,7 @@ export async function addCategory(req, res) {
 
   try {
     const { rows: categoryExist } = await connection.query(
-      "SELECT * FROM categories WHERE name = $1",
+      "SELECT * FROM categories WHERE name = $1;",
       [name]
     );
 
@@ -24,7 +24,7 @@ export async function addCategory(req, res) {
       return res.sendStatus(409);
     }
 
-    await connection.query("INSERT INTO categories (name) VALUES ($1)", [name]);
+    await connection.query("INSERT INTO categories (name) VALUES ($1);", [name]);
 
     res.sendStatus(201);
   } catch {
