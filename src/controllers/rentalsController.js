@@ -1,25 +1,53 @@
 import connection from "../dbStartegy/postgres.js";
 import dayjs from "dayjs";
 
-// export async function getGames(req, res) {
-//   const { name } = req.query;
-//   let findByName = "";
+export async function getRentals(req, res) {
+  const { customerId, gameId } = req.query;
+  let findByParams = "";
 
-//   try {
-//     if (name) {
-//       findByName = `WHERE games.name ILIKE '${name}%'`;
-//     }
+  try {
+    if (customerId) {
+      findByParams = `WHERE rentals."customerId" = ${customerId}`;
+    }
 
-//     const { rows: games } = await connection.query(
-//       `SELECT games.*, categories.name as "categoryName" FROM games JOIN categories ON games."categoryId" = categories.id ${findByName};`
-//     );
+    if (gameId) {
+      findByParams = `WHERE rentals."gameId" = ${gameId}`;
+    }
 
-//     return res.send(games);
-//   } catch (error) {
-//     console.log(error);
-//     res.sendStatus(500);
-//   }
-// }
+    const { rows: rentals } = await connection.query(
+      `
+        SELECT 
+            rentals.*, 
+            to_json(customers) "customer", 
+            to_json(games) "game"
+        FROM rentals 
+            INNER JOIN customers ON customers.id = rentals."customerId" 
+            INNER JOIN (SELECT 
+                    games.*, 
+                    categories.name as "categoryName" 
+                FROM games 
+                    JOIN categories ON games."categoryId" = categories.id) 
+                AS games
+            ON games.id = rentals."gameId" 
+        ${findByParams}
+           ;
+        `
+    );
+    if (rentals.length !== 0) {
+      delete rentals[0].customer.phone;
+      delete rentals[0].customer.cpf;
+      delete rentals[0].customer.birthday;
+      delete rentals[0].game.image;
+      delete rentals[0].game.stockTotal;
+      delete rentals[0].game.pricePerDay;
+    }
+
+    return res.send(rentals);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
 
 export async function addRental(req, res) {
   try {
