@@ -7,7 +7,7 @@ import {
 import {
   ValidateCustomer,
   ValidateGetCustomer,
-} from "../middlewares/customersSchemaValidationMiddleware.js";
+} from "../middlewares/customersValidationMiddleware.js";
 import { Router } from "express";
 
 const router = Router();

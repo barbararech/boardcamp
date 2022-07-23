@@ -25,3 +25,23 @@ export async function ValidateRental(req, res, next) {
 
   next();
 }
+
+export async function ValidateDeleteRental(req, res, next) {
+  const { id } = req.params;
+
+  const { rows: rentalExist } = await connection.query(
+    "SELECT * FROM rentals WHERE id = $1;",
+    [id]
+  );
+
+  const { rows: rentalFinished } = await connection.query(
+    `SELECT rentals."returnDate" FROM rentals WHERE id = $1;`,
+    [id]
+  );
+
+  if (rentalExist.length === 0 || rentalFinished[0].returnDate === null) {
+    return res.sendStatus(400);
+  }
+
+  next();
+}
