@@ -63,6 +63,19 @@ export async function addRental(req, res) {
 
     const originalPrice = daysRented * games[0].pricePerDay;
 
+    const { rows: rentalsGame } = await connection.query(
+      `SELECT * FROM rentals WHERE "gameId" = $1;`, [gameId]
+    );
+
+    if ((rentalsGame.length+1 ) > games[0].stockTotal) {
+      console.log(rentalsGame.length)
+      console.log(games[0].stockTotal)
+      console.log("nao da")
+      return res.sendStatus(400);
+    }
+    console.log(rentalsGame.length+1)
+    console.log(games[0].stockTotal)
+
     await connection.query(
       `INSERT INTO rentals ("customerId", "gameId", "daysRented", "returnDate", "delayFee","rentDate", "originalPrice") VALUES ($1, $2, $3, $4, $5, $6, $7);`,
       [
