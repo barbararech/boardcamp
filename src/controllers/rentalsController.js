@@ -2,17 +2,18 @@ import connection from "../dbStartegy/postgres.js";
 import dayjs from "dayjs";
 
 export async function getRentals(req, res) {
-  const { customerId, gameId } = req.query;
-  let findByParams = "";
+  const { customerId, gameId, offset, limit } = req.query;
+  let paramsClause = "";
+  let offsetClause = "";
+  let limitClause = "";
 
   try {
-    if (customerId) {
-      findByParams = `WHERE rentals."customerId" = ${customerId}`;
-    }
-
-    if (gameId) {
-      findByParams = `WHERE rentals."gameId" = ${gameId}`;
-    }
+    customerId
+      ? (paramsClause = `WHERE rentals."customerId" = ${customerId}`)
+      : "";
+    gameId ? (paramsClause = `WHERE rentals."gameId" = ${gameId}`) : "";
+    offset ? (offsetClause = `OFFSET ${offset}`) : "";
+    limit ? (limitClause = `LIMIT ${limit}`) : "";
 
     const { rows: rentals } = await connection.query(
       `
@@ -29,7 +30,9 @@ export async function getRentals(req, res) {
                     JOIN categories ON games."categoryId" = categories.id) 
                 AS games
             ON games.id = rentals."gameId" 
-        ${findByParams}
+        ${paramsClause}
+        ${offsetClause}
+        ${limitClause}
            ;
         `
     );

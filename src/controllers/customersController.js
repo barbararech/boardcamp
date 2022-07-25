@@ -2,16 +2,22 @@ import connection from "../dbStartegy/postgres.js";
 import moment from "moment";
 
 export async function getCustomers(req, res) {
-  const { cpf } = req.query;
+  const { cpf, offset, limit } = req.query;
   let findByCpf = "";
+  let offsetClause = "";
+  let limitClause = "";
 
   try {
-    if (cpf) {
-      findByCpf = `WHERE cpf ILIKE '${cpf}%'`;
-    }
+    cpf ? (findByCpf = `WHERE cpf ILIKE '${cpf}%'`) : "";
+    offset ? (offsetClause = `OFFSET ${offset}`) : "";
+    limit ? (limitClause = `LIMIT ${limit}`) : "";
 
     const { rows: customers } = await connection.query(
-      `SELECT * FROM customers ${findByCpf};`
+      `SELECT * FROM customers 
+      ${findByCpf}
+      ${offsetClause}
+      ${limitClause}
+      ;`
     );
 
     Object.keys(customers).forEach(function (key) {

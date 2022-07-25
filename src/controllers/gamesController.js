@@ -1,13 +1,15 @@
 import connection from "../dbStartegy/postgres.js";
 
 export async function getGames(req, res) {
-  const { name } = req.query;
+  const { name, offset, limit } = req.query;
   let findByName = "";
+  let offsetClause = "";
+  let limitClause = "";
 
   try {
-    if (name) {
-      findByName = `WHERE games.name ILIKE '${name}%'`;
-    }
+    name ? (findByName = `WHERE games.name ILIKE '${name}%'`) : "";
+    offset ? (offsetClause = `OFFSET ${offset}`) : "";
+    limit ? (limitClause = `LIMIT ${limit}`) : "";
 
     const { rows: games } = await connection.query(
       `SELECT 
@@ -15,7 +17,10 @@ export async function getGames(req, res) {
         categories.name as "categoryName" 
       FROM games 
       JOIN categories 
-      ON games."categoryId" = categories.id ${findByName};`
+      ON games."categoryId" = categories.id ${findByName}
+      ${offsetClause}
+      ${limitClause};
+      `
     );
 
     return res.send(games);
