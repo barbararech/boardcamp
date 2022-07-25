@@ -78,7 +78,15 @@ export async function addRental(req, res) {
     console.log(games[0].stockTotal);
 
     await connection.query(
-      `INSERT INTO rentals ("customerId", "gameId", "daysRented", "returnDate", "delayFee","rentDate", "originalPrice") VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+      `INSERT INTO rentals (
+          "customerId", 
+          "gameId", 
+          "daysRented", 
+          "returnDate", 
+          "delayFee",
+          "rentDate", 
+          "originalPrice") 
+        VALUES ($1, $2, $3, $4, $5, $6, $7);`,
       [
         customerId,
         gameId,
