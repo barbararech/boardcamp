@@ -1,5 +1,6 @@
 import connection from "../dbStartegy/postgres.js";
 import dayjs from "dayjs";
+import moment from "moment";
 
 export async function getRentals(req, res) {
   const { customerId, gameId, offset, limit, order } = req.query;
@@ -47,6 +48,18 @@ export async function getRentals(req, res) {
       delete rentals[0].game.stockTotal;
       delete rentals[0].game.pricePerDay;
     }
+
+    Object.keys(rentals).forEach(function (key) {
+      rentals[key].rentDate = moment(rentals.rentDate)
+        .utc()
+        .format("YYYY-MM-DD");
+    });
+
+    Object.keys(rentals).forEach(function (key) {
+      rentals[key].returnDate = moment(rentals.returnDate)
+        .utc()
+        .format("YYYY-MM-DD");
+    });
 
     return res.send(rentals);
   } catch (error) {
