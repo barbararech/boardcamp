@@ -2,8 +2,9 @@ import connection from "../dbStartegy/postgres.js";
 import dayjs from "dayjs";
 
 export async function getRentals(req, res) {
-  const { customerId, gameId, offset, limit } = req.query;
+  const { customerId, gameId, offset, limit, order } = req.query;
   let paramsClause = "";
+  let orderClause = "";
   let offsetClause = "";
   let limitClause = "";
 
@@ -12,6 +13,7 @@ export async function getRentals(req, res) {
       ? (paramsClause = `WHERE rentals."customerId" = ${customerId}`)
       : "";
     gameId ? (paramsClause = `WHERE rentals."gameId" = ${gameId}`) : "";
+    order ? (orderClause = `ORDER BY "${order}" ASC`) : "";
     offset ? (offsetClause = `OFFSET ${offset}`) : "";
     limit ? (limitClause = `LIMIT ${limit}`) : "";
 
@@ -31,6 +33,7 @@ export async function getRentals(req, res) {
                 AS games
             ON games.id = rentals."gameId" 
         ${paramsClause}
+        ${orderClause}
         ${offsetClause}
         ${limitClause}
            ;
