@@ -49,17 +49,9 @@ export async function getRentals(req, res) {
       delete rentals[0].game.pricePerDay;
     }
 
-    Object.keys(rentals).forEach(function (key) {
-      rentals[key].rentDate = moment(rentals.rentDate)
-        .utc()
-        .format("YYYY-MM-DD");
-    });
+    FormatDateRentDate(rentals);
 
-    Object.keys(rentals).forEach(function (key) {
-      rentals[key].returnDate = moment(rentals.returnDate)
-        .utc()
-        .format("YYYY-MM-DD");
-    });
+    FormatDateReturnDate(rentals);
 
     return res.send(rentals);
   } catch (error) {
@@ -173,4 +165,18 @@ export async function finishRental(req, res) {
     console.log(error);
     res.sendStatus(500);
   }
+}
+
+function FormatDateRentDate(rentals) {
+  Object.keys(rentals).forEach(function (key) {
+    rentals[key].rentDate = moment(rentals.rentDate).utc().format("YYYY-MM-DD");
+  });
+}
+
+function FormatDateReturnDate(rentals) {
+  Object.keys(rentals).forEach(function (key) {
+    rentals[key].returnDate = moment(rentals.returnDate)
+      .utc()
+      .format("YYYY-MM-DD");
+  });
 }

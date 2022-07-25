@@ -23,11 +23,7 @@ export async function getCustomers(req, res) {
       ;`
     );
 
-    Object.keys(customers).forEach(function (key) {
-      customers[key].birthday = moment(customers.birthday)
-        .utc()
-        .format("YYYY-MM-DD");
-    });
+    formatDate(customers);
 
     return res.send(customers);
   } catch (error) {
@@ -40,9 +36,7 @@ export async function getCustomer(req, res) {
   try {
     const { customer } = res.locals;
 
-    customer[0].birthday = moment(customer[0].birthday)
-      .utc()
-      .format("YYYY-MM-DD");
+    formatDate(customer);
 
     return res.send(customer);
   } catch (error) {
@@ -89,4 +83,12 @@ export async function updateCustomer(req, res) {
     console.log(error);
     res.sendStatus(500);
   }
+}
+
+function formatDate(customers) {
+  Object.keys(customers).forEach(function (key) {
+    customers[key].birthday = moment(customers.birthday)
+      .utc()
+      .format("YYYY-MM-DD");
+  });
 }
